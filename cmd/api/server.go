@@ -13,6 +13,10 @@ func initFlags(cfg *config) {
 	flag.IntVar(&cfg.port, "port", 4000, "API Server PORT")
 	flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("MYSHOP_DB_DSN"), "PostgreSQL DSN")
 
+	flag.Float64Var(&cfg.limiter.rps, "limiter-rps", 2, "Rate limiter maximum requests per second")
+	flag.IntVar(&cfg.limiter.burst, "limiter-burst", 4, "Rate limiter maximum burst")
+	flag.BoolVar(&cfg.limiter.enabled, "limiter-enabled", true, "Enable rate limiter")
+
 	flag.Parse()
 }
 

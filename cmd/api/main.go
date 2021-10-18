@@ -16,6 +16,11 @@ type config struct {
 	db   struct {
 		dsn string
 	}
+	limiter struct {
+		enabled bool
+		rps     float64
+		burst   int
+	}
 }
 
 type application struct {
@@ -35,7 +40,7 @@ func main() {
 
 	db, err := connectDatabase(cfg)
 	if err != nil {
-		sugar.Fatal("error database connection")
+		sugar.Fatal("database connection failed")
 	}
 	autoMigrate(db)
 	sugar.Info("database connection pool established")

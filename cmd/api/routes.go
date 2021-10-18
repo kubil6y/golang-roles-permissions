@@ -13,5 +13,5 @@ func (app *application) routes() http.Handler {
 	router.NotFound = http.HandlerFunc(app.notFoundResponse)
 	router.HandlerFunc(http.MethodGet, "/v1/api/healthcheck", app.healthCheckHandler)
 
-	return router
+	return app.recoverPanic(app.rateLimit(router))
 }

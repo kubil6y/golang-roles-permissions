@@ -5,6 +5,7 @@ go 1.17
 require (
 	github.com/julienschmidt/httprouter v1.3.0
 	go.uber.org/zap v1.19.1
+	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac
 	gorm.io/driver/postgres v1.1.2
 	gorm.io/gorm v1.21.16
 )
