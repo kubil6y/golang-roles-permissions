@@ -4,24 +4,16 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 	"time"
-
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 )
 
 func initFlags(cfg *config) {
 	flag.StringVar(&cfg.env, "env", "development", "Environment (development|staging|production)")
 	flag.IntVar(&cfg.port, "port", 4000, "API Server PORT")
+	flag.StringVar(&cfg.db.dsn, "db-dsn", os.Getenv("MYSHOP_DB_DSN"), "PostgreSQL DSN")
 
 	flag.Parse()
-}
-
-func newZapLogger() *zap.SugaredLogger {
-	config := zap.NewProductionConfig()
-	config.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(time.Stamp)
-	logger, _ := config.Build()
-	return logger.Sugar()
 }
 
 func (app *application) serve() error {
