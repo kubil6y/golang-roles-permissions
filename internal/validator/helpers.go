@@ -6,6 +6,11 @@ var (
 	EmailRX = regexp.MustCompile("^[a-zA-Z0-9.!#$%&'*+\\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$")
 )
 
+func ValidateEmail(v *Validator, email string) {
+	v.Check(email != "", "email", "must be provided")
+	v.Check(Matches(email, EmailRX), "email", "must be a valid email address")
+}
+
 // In() checks if a string in a string slice and returns bool
 func In(s string, list ...string) bool {
 	for _, v := range list {
