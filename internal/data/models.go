@@ -9,20 +9,27 @@ import (
 	"gorm.io/gorm"
 )
 
+var (
+	ErrRecordNotFound = errors.New("record not found")
+	ErrDuplicateEmail = errors.New("duplicate email")
+)
+
 type CoreModel struct {
-	ID        int            `json:"id" gorm:"primarykey"`
-	CreatedAt time.Time      `json:"-"`
+	ID        int64          `json:"id" gorm:"primarykey"`
+	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"-"`
 	DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 type Models struct {
-	Users UserModel
+	Users  UserModel
+	Tokens TokenModel
 }
 
 func NewModels(db *gorm.DB) Models {
 	return Models{
-		Users: UserModel{DB: db},
+		Users:  UserModel{DB: db},
+		Tokens: TokenModel{DB: db},
 	}
 }
 

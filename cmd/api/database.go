@@ -17,5 +17,6 @@ func connectDatabase(cfg config) (*gorm.DB, error) {
 func autoMigrate(db *gorm.DB) {
 	db.AutoMigrate(
 		&data.User{},
+		&data.Token{},
 	)
 }
