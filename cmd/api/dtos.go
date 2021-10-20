@@ -39,3 +39,14 @@ func (d *createAuthenticationTokenDto) validate(v *validator.Validator) {
 	v.Check(d.Password != "", "password", "must be provided")
 	v.Check(len(d.Password) > 3, "password", "must be longer than three characters")
 }
+
+type permissionDTO struct {
+	Name string `json:"name"`
+}
+
+func (d *permissionDTO) validate(v *validator.Validator) {
+	v.Check(d.Name != "", "name", "must be provided")
+}
+func (d *permissionDTO) populate(p *data.Permission) {
+	p.Name = d.Name
+}

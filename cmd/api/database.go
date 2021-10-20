@@ -18,5 +18,7 @@ func autoMigrate(db *gorm.DB) {
 	db.AutoMigrate(
 		&data.User{},
 		&data.Token{},
+		&data.Role{},
+		&data.Permission{},
 	)
 }

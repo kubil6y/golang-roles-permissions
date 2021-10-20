@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	ErrRecordNotFound = errors.New("record not found")
-	ErrDuplicateEmail = errors.New("duplicate email")
+	ErrRecordNotFound  = errors.New("record not found")
+	ErrDuplicateEmail  = errors.New("duplicate email")
+	ErrDuplicateRecord = errors.New("duplicate record")
 )
 
 type CoreModel struct {
@@ -22,14 +23,18 @@ type CoreModel struct {
 }
 
 type Models struct {
-	Users  UserModel
-	Tokens TokenModel
+	Users       UserModel
+	Tokens      TokenModel
+	Roles       RoleModel
+	Permissions PermissionModel
 }
 
 func NewModels(db *gorm.DB) Models {
 	return Models{
-		Users:  UserModel{DB: db},
-		Tokens: TokenModel{DB: db},
+		Users:       UserModel{DB: db},
+		Tokens:      TokenModel{DB: db},
+		Roles:       RoleModel{DB: db},
+		Permissions: PermissionModel{DB: db},
 	}
 }
 

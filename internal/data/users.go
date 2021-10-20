@@ -15,12 +15,14 @@ var (
 
 type User struct {
 	CoreModel
-	FirstName   string  `json:"first_name" gorm:"not null"`
-	LastName    string  `json:"last_name" gorm:"not null"`
-	Email       string  `json:"email" gorm:"uniqueIndex;not null"`
-	Password    []byte  `json:"-" gorm:"not null"`
-	IsActivated bool    `json:"-"`
-	Tokens      []Token `json:"tokens" gorm:"foreignKey:UserID"`
+	FirstName   string       `json:"first_name" gorm:"not null"`
+	LastName    string       `json:"last_name" gorm:"not null"`
+	Email       string       `json:"email" gorm:"uniqueIndex;not null"`
+	Password    []byte       `json:"-" gorm:"not null"`
+	IsActivated bool         `json:"-" gorm:"default:false;not null"`
+	IsAdmin     bool         `json:"-" gorm:"default:false;not null"`
+	Tokens      []Token      `json:"tokens,omitempty" gorm:"foreignKey:UserID"`
+	Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:users_permissions"`
 }
 
 func (u *User) IsAnonymous() bool {
@@ -69,7 +71,7 @@ func (m UserModel) Update(u *User) error {
 	return m.DB.Model(u).Updates(u).Error
 }
 
-func (m UserModel) GetById(id int64) (*User, error) {
+func (m UserModel) GetByID(id int64) (*User, error) {
 	var user User
 	if err := m.DB.First(&user, id).Error; err != nil {
 		switch {
@@ -100,14 +102,20 @@ func (m UserModel) GetForToken(scope string, tokenPlaintext string) (*User, erro
 	tokenHash := sizedTokenHash[:]
 
 	var token Token
-	err := m.DB.Where("hash=? and scope=? and expiry > ?", tokenHash, scope, time.Now()).Preload("User").Find(&token).Error
+	err := m.DB.Where("hash=? and scope=? and expiry > ?", tokenHash, scope, time.Now()).Preload("User").First(&token).Error
 	if err != nil {
-		return nil, err
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+		//return nil, err
 	}
 
-	if token.User.ID == 0 {
-		return nil, ErrRecordNotFound
-	}
+	//if token.User.ID == 0 {
+	//return nil, ErrRecordNotFound
+	//}
 
 	return &token.User, nil
 }
