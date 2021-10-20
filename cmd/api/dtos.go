@@ -51,14 +51,24 @@ func (d *permissionDTO) populate(p *data.Permission) {
 	p.Name = d.Name
 }
 
-type createRoleDTO struct {
+type roleDTO struct {
 	Name string `json:"name"`
 }
 
-func (d *createRoleDTO) validate(v *validator.Validator) {
+func (d *roleDTO) validate(v *validator.Validator) {
 	v.Check(d.Name != "", "name", "must be provided")
 }
 
-func (d *createRoleDTO) populate(r *data.Role) {
+func (d *roleDTO) populate(r *data.Role) {
 	r.Name = d.Name
+}
+
+type grantPermissionsToRolesDTO struct {
+	RoleID      int64   `json:"role_id"`
+	Permissions []int64 `json:"permissions"`
+}
+
+func (d *grantPermissionsToRolesDTO) validate(v *validator.Validator) {
+	v.Check(d.RoleID > 0, "role_id", "invalid value, must be bigger than zero")
+	v.Check(len(d.Permissions) > 0, "permissions", "invalid value, []int > 0")
 }

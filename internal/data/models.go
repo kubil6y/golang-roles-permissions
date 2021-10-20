@@ -16,10 +16,9 @@ var (
 )
 
 type CoreModel struct {
-	ID        int64     `json:"id" gorm:"primarykey"`
+	ID        int64     `json:"id" gorm:"primaryKey"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"-"`
-	//DeletedAt gorm.DeletedAt `json:"-" gorm:"index"`
 }
 
 type Models struct {

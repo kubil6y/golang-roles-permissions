@@ -126,3 +126,18 @@ func (app *application) background(fn func()) {
 		fn()
 	}()
 }
+
+// intSliceToSet() turns []int64, into set []int64
+func (app *application) intSliceToSet(nums []int64) []int64 {
+	var result []int64
+	cache := map[int64]bool{}
+
+	for _, num := range nums {
+		cache[num] = true
+	}
+
+	for k := range cache {
+		result = append(result, k)
+	}
+	return result
+}

@@ -27,7 +27,7 @@ func (m RoleModel) GetAll() ([]*Role, error) {
 
 func (m RoleModel) GetByID(id int64) (*Role, error) {
 	var role Role
-	err := m.DB.First(&role, id).Error
+	err := m.DB.Preload("Permissions").First(&role, id).Error
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
@@ -36,6 +36,7 @@ func (m RoleModel) GetByID(id int64) (*Role, error) {
 			return nil, err
 		}
 	}
+
 	return &role, nil
 }
 
