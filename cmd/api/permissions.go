@@ -35,7 +35,9 @@ func (app *application) createPermissionHandler(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	if err := app.writeJSON(w, http.StatusCreated, envelope{"permission": permission}, nil); err != nil {
+	e := envelope{"permission": permission}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusCreated, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
