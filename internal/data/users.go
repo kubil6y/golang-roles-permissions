@@ -99,16 +99,15 @@ func (m UserModel) GetForToken(scope string, tokenPlaintext string) (*User, erro
 	sizedTokenHash := sha256.Sum256([]byte(tokenPlaintext))
 	tokenHash := sizedTokenHash[:]
 
-	var user User
-	err := m.DB.Where("hash=?, scope=?, expiry > ?", tokenHash, scope, time.Now()).Find(&user).Error
+	var token Token
+	err := m.DB.Where("hash=? and scope=? and expiry > ?", tokenHash, scope, time.Now()).Preload("User").Find(&token).Error
 	if err != nil {
-		switch {
-		case errors.Is(err, gorm.ErrRecordNotFound):
-			return nil, ErrRecordNotFound
-		default:
-			return nil, err
-		}
+		return nil, err
 	}
 
-	return &user, nil
+	if token.User.ID == 0 {
+		return nil, ErrRecordNotFound
+	}
+
+	return &token.User, nil
 }

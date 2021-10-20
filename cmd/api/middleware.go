@@ -101,6 +101,7 @@ func (app *application) authenticate(next http.Handler) http.Handler {
 		if authorizationHeader == "" {
 			r = app.setUserContext(r, data.AnonymousUser)
 			next.ServeHTTP(w, r)
+			return
 		}
 
 		headerParts := strings.Split(authorizationHeader, " ")
