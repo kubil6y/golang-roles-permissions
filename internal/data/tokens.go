@@ -20,7 +20,7 @@ type Token struct {
 	Plaintext string    `json:"token" gorm:"-"`
 	Scope     string    `json:"-"`
 	Expiry    time.Time `json:"expiry"`
-	UserID    int64     `json:"-"`
+	UserID    int64     `json:"user_id"`
 }
 
 func generateToken(userID int64, ttl time.Duration, scope string) (*Token, error) {

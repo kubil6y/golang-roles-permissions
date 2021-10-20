@@ -1,21 +1,30 @@
 package data
 
 import (
+	"crypto/sha256"
 	"errors"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
+var (
+	AnonymousUser = &User{}
+)
+
 type User struct {
 	CoreModel
-	FirstName   string `json:"first_name" gorm:"not null"`
-	LastName    string `json:"last_name" gorm:"not null"`
-	Email       string `json:"email" gorm:"uniqueIndex;not null"`
-	Password    []byte `json:"-" gorm:"not null"`
-	IsActivated bool   `json:"-"`
+	FirstName   string  `json:"first_name" gorm:"not null"`
+	LastName    string  `json:"last_name" gorm:"not null"`
+	Email       string  `json:"email" gorm:"uniqueIndex;not null"`
+	Password    []byte  `json:"-" gorm:"not null"`
+	IsActivated bool    `json:"-"`
+	Tokens      []Token `json:"tokens" gorm:"foreignKey:UserID"`
+}
 
-	Tokens []Token `json:"tokens" gorm:"foreignKey:UserID"`
+func (u *User) IsAnonymous() bool {
+	return u == AnonymousUser
 }
 
 func (u *User) SetPassword(plain string) error {
@@ -83,5 +92,23 @@ func (m UserModel) GetByEmail(email string) (*User, error) {
 			return nil, err
 		}
 	}
+	return &user, nil
+}
+
+func (m UserModel) GetForToken(scope string, tokenPlaintext string) (*User, error) {
+	sizedTokenHash := sha256.Sum256([]byte(tokenPlaintext))
+	tokenHash := sizedTokenHash[:]
+
+	var user User
+	err := m.DB.Where("hash=?, scope=?, expiry > ?", tokenHash, scope, time.Now()).Find(&user).Error
+	if err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+
 	return &user, nil
 }

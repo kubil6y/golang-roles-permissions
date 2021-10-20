@@ -34,3 +34,8 @@ func ValidateEmail(v *Validator, email string) {
 	v.Check(email != "", "email", "must be provided")
 	v.Check(Matches(email, EmailRX), "email", "must be a valid email address")
 }
+
+func ValidateTokenPlaintext(v *Validator, tokenPlaintext string) {
+	v.Check(tokenPlaintext != "", "token", "must be provided")
+	v.Check(len(tokenPlaintext) == 26, "token", "must be 26 bytes long")
+}

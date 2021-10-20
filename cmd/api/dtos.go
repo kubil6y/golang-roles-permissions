@@ -27,7 +27,6 @@ func (d *registerUserDTO) populate(user *data.User) {
 	user.FirstName = d.FirstName
 	user.LastName = d.LastName
 	user.Email = d.Email
-	user.SetPassword(d.Password) // hashing...
 }
 
 type createAuthenticationTokenDto struct {

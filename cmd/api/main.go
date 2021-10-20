@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sync"
 	"time"
 
 	"github.com/kubil6y/myshop-go/internal/data"
@@ -27,6 +28,7 @@ type application struct {
 	config config
 	logger *zap.SugaredLogger
 	models data.Models
+	wg     sync.WaitGroup
 }
 
 func main() {
