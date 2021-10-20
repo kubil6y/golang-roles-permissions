@@ -12,7 +12,24 @@ import (
 	"github.com/julienschmidt/httprouter"
 )
 
+// envelope type allows us to send quick json responses
 type envelope map[string]interface{}
+
+// outOK() is used to send OK responses
+func (app *application) outOK(message interface{}) map[string]interface{} {
+	return map[string]interface{}{
+		"ok":   true,
+		"data": message,
+	}
+}
+
+// outERR() is used to send ERROR responses
+func (app *application) outERR(message interface{}) map[string]interface{} {
+	return map[string]interface{}{
+		"ok":    false,
+		"error": message,
+	}
+}
 
 func (app *application) writeJSON(
 	w http.ResponseWriter, status int, data interface{}, headers http.Header) error {

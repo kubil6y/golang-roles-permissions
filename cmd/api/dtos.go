@@ -50,3 +50,15 @@ func (d *permissionDTO) validate(v *validator.Validator) {
 func (d *permissionDTO) populate(p *data.Permission) {
 	p.Name = d.Name
 }
+
+type createRoleDTO struct {
+	Name string `json:"name"`
+}
+
+func (d *createRoleDTO) validate(v *validator.Validator) {
+	v.Check(d.Name != "", "name", "must be provided")
+}
+
+func (d *createRoleDTO) populate(r *data.Role) {
+	r.Name = d.Name
+}

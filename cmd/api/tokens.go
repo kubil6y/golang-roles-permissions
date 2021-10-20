@@ -45,10 +45,11 @@ func (app *application) createAuthenticationTokenHandler(w http.ResponseWriter, 
 
 	token, err := app.models.Tokens.New(user.ID, 3*24*time.Hour, data.ScopeAuthentication)
 
-	out := envelope{"authentication_token": map[string]interface{}{
+	e := envelope{"authentication_token": map[string]interface{}{
 		"token":  token.Plaintext,
 		"expiry": token.Expiry,
 	}}
+	out := app.outOK(e)
 	if err := app.writeJSON(w, http.StatusCreated, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return

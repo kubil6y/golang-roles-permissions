@@ -46,3 +46,5 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 }
+
+// TODO give user default permissions after creating roles and shit

@@ -8,8 +8,8 @@ import (
 
 type Role struct {
 	CoreModel
-	Name        string       `json:"name"`
-	Permissions []Permission `json:"permissions" gorm:"many2many:role_permissions"`
+	Name        string       `json:"name" gorm:"uniqueIndex;not null"`
+	Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:role_permissions"`
 }
 
 type RoleModel struct {
@@ -56,8 +56,7 @@ func (m RoleModel) Insert(r *Role) error {
 	err := m.DB.Create(r).Error
 	if err != nil {
 		switch {
-		// TODO
-		case err.Error() == `ERROR: duplicate key value violates unique constraint "idx_users_email" (SQLSTATE 23505)`:
+		case err.Error() == `ERROR: duplicate key value violates unique constraint "idx_roles_name" (SQLSTATE 23505)`:
 			return ErrDuplicateRecord
 		default:
 			return err

@@ -50,7 +50,9 @@ func (app *application) getAllPermissionsHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	if err := app.writeJSON(w, http.StatusOK, envelope{"permissions": permissions}, nil); err != nil {
+	e := envelope{"permissions": permissions}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
@@ -74,7 +76,9 @@ func (app *application) getPermissionHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if err := app.writeJSON(w, http.StatusOK, envelope{"permission": permission}, nil); err != nil {
+	e := envelope{"permission": permission}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
@@ -117,7 +121,9 @@ func (app *application) updatePermissionsHandler(w http.ResponseWriter, r *http.
 		return
 	}
 
-	if err := app.writeJSON(w, http.StatusOK, envelope{"message": "resource updated"}, nil); err != nil {
+	e := envelope{"message": "resource updated"}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
