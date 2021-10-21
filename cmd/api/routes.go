@@ -13,6 +13,8 @@ func (app *application) routes() http.Handler {
 	router.NotFound = http.HandlerFunc(app.notFoundResponse)
 	router.HandlerFunc(http.MethodGet, "/v1/healthcheck", app.isAdmin(app.healthCheckHandler))
 
+	router.HandlerFunc(http.MethodGet, "/v1/users", app.getUsersHandler)
+
 	router.HandlerFunc(http.MethodPost, "/v1/admin/permissions", app.isAdmin(app.createPermissionHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/permissions", app.isAdmin(app.getAllPermissionsHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/permissions/:id", app.isAdmin(app.getPermissionHandler))

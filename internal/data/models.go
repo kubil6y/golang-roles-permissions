@@ -37,12 +37,13 @@ func NewModels(db *gorm.DB) Models {
 	}
 }
 
-func IsDuplicateRecord(err error) {
+func IsDuplicateRecord(err error) bool {
+	fmt.Println("this is hit")
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
-			fmt.Println(pgErr.Message)
-			fmt.Println(pgErr.Code)
+			return pgErr.Code == "23505"
 		}
 	}
+	return false
 }

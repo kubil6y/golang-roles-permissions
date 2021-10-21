@@ -8,6 +8,7 @@ import (
 	"github.com/kubil6y/myshop-go/internal/validator"
 )
 
+// TODO give user default permissions after creating roles and shit
 func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Request) {
 	var input registerUserDTO
 
@@ -47,4 +48,4 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-// TODO give user default permissions after creating roles and shit
+func (app *application) getUsersHandler(w http.ResponseWriter, r *http.Request) {}

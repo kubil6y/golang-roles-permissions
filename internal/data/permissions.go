@@ -56,7 +56,7 @@ func (m PermissionModel) Insert(p *Permission) error {
 	err := m.DB.Create(p).Error
 	if err != nil {
 		switch {
-		case err.Error() == `ERROR: duplicate key value violates unique constraint "idx_permissions_name" (SQLSTATE 23505)`:
+		case IsDuplicateRecord(err):
 			return ErrDuplicateRecord
 		default:
 			return err

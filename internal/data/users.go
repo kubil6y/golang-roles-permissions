@@ -58,7 +58,7 @@ type UserModel struct {
 func (m UserModel) Insert(u *User) error {
 	if err := m.DB.Create(u).Error; err != nil {
 		switch {
-		case err.Error() == `ERROR: duplicate key value violates unique constraint "idx_users_email" (SQLSTATE 23505)`:
+		case IsDuplicateRecord(err):
 			return ErrDuplicateEmail
 		default:
 			return err

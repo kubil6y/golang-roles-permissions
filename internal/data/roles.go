@@ -57,7 +57,7 @@ func (m RoleModel) Insert(r *Role) error {
 	err := m.DB.Create(r).Error
 	if err != nil {
 		switch {
-		case err.Error() == `ERROR: duplicate key value violates unique constraint "idx_roles_name" (SQLSTATE 23505)`:
+		case IsDuplicateRecord(err):
 			return ErrDuplicateRecord
 		default:
 			return err
