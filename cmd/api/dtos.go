@@ -69,6 +69,7 @@ type grantPermissionsToRolesDTO struct {
 }
 
 func (d *grantPermissionsToRolesDTO) validate(v *validator.Validator) {
-	v.Check(d.RoleID > 0, "role_id", "invalid value, must be bigger than zero")
+	v.Check(d.RoleID > 0, "role_id", "invalid value")
 	v.Check(len(d.Permissions) > 0, "permissions", "invalid value, []int > 0")
+	v.Check(validator.IsUniqueIS(d.Permissions), "permissions", "must be unique values")
 }

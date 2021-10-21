@@ -9,7 +9,7 @@ import (
 type Role struct {
 	CoreModel
 	Name        string       `json:"name" gorm:"uniqueIndex;not null"`
-	Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:role_permissions"`
+	Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:roles_permissions"`
 }
 
 type RoleModel struct {
@@ -27,7 +27,7 @@ func (m RoleModel) GetAll() ([]*Role, error) {
 
 func (m RoleModel) GetByID(id int64) (*Role, error) {
 	var role Role
-	err := m.DB.Preload("Permissions").First(&role, id).Error
+	err := m.DB.Preload("Permissions").Where("id=?", id).First(&role).Error
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
@@ -42,7 +42,7 @@ func (m RoleModel) GetByID(id int64) (*Role, error) {
 
 func (m RoleModel) GetByName(name string) (*Role, error) {
 	var role Role
-	if err := m.DB.Where("name = ?", name).First(&role).Error; err != nil {
+	if err := m.DB.Preload("Permissions").Where("name = ?", name).First(&role).Error; err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			return nil, ErrRecordNotFound

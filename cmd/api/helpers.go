@@ -127,6 +127,7 @@ func (app *application) background(fn func()) {
 	}()
 }
 
+// TODO not used atm
 // intSliceToSet() turns []int64, into set []int64
 func (app *application) intSliceToSet(nums []int64) []int64 {
 	var result []int64

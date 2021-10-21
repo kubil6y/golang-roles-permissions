@@ -16,13 +16,22 @@ func In(s string, list ...string) bool {
 	return false
 }
 
-// Unique() checks if a string slice is a set and returns bool
-func Unique(ss []string) bool {
-	tmp := make(map[string]bool)
+// IsUniqueSS() checks if a string slice is a set and returns bool
+func IsUniqueSS(ss []string) bool {
+	cache := make(map[string]bool)
 	for _, v := range ss {
-		tmp[v] = true
+		cache[v] = true
 	}
-	return len(tmp) == len(ss)
+	return len(cache) == len(ss)
+}
+
+// IsUniqueIS() checks if a int64 slice is a set and returns bool
+func IsUniqueIS(is []int64) bool {
+	cache := make(map[int64]bool)
+	for _, v := range is {
+		cache[v] = true
+	}
+	return len(cache) == len(is)
 }
 
 // Matches() checks for regex pattern and returns bool
