@@ -1,4 +1,4 @@
-// source: https://medium.com/@michalkowal567/creating-reusable-pagination-in-golang-and-gorm-4b23e179a54b
+// inspired by this source + alex: https://medium.com/@michalkowal567/creating-reusable-pagination-in-golang-and-gorm-4b23e179a54b
 package data
 
 import (
@@ -13,15 +13,8 @@ type Paginate struct {
 	Page  int `json:"page"`
 }
 
-// NewPaginate is used by pagination, example:
-//err := m.DB.Scopes(NewPaginate(p.Limit, p.Page).PaginatedResults).Find(&permissions).Error
-func NewPaginate(limit, page int) *Paginate {
-	return &Paginate{
-		Limit: limit,
-		Page:  page,
-	}
-}
-
+// PaginatedResults is used when making db calls, example:
+// err := m.DB.Scopes(p.PaginatedResults).Find(&permissions).Error
 func (p Paginate) PaginatedResults(db *gorm.DB) *gorm.DB {
 	offset := (p.Page - 1) * p.Limit
 	return db.Offset(offset).Limit(p.Limit)

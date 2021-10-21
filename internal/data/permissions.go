@@ -24,7 +24,7 @@ func (p *PermissionModel) Count() int {
 
 func (m PermissionModel) GetAll(p *Paginate) ([]*Permission, Metadata, error) {
 	permissions := make([]*Permission, 0)
-	err := m.DB.Scopes(NewPaginate(p.Limit, p.Page).PaginatedResults).Find(&permissions).Error
+	err := m.DB.Scopes(p.PaginatedResults).Find(&permissions).Error
 	if err != nil {
 		return []*Permission{}, Metadata{}, err
 	}

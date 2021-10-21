@@ -43,7 +43,7 @@ func (app *application) createPermissionHandler(w http.ResponseWriter, r *http.R
 	}
 }
 
-func (app *application) getAllPermissionsHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) getAllPermissionHandler(w http.ResponseWriter, r *http.Request) {
 	qs := r.URL.Query()
 	v := validator.New()
 	p := &data.Paginate{

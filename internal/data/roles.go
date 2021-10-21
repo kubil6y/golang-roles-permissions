@@ -16,13 +16,16 @@ type RoleModel struct {
 	DB *gorm.DB
 }
 
-func (m RoleModel) GetAll() ([]*Role, error) {
+func (m RoleModel) GetAll(p *Paginate) ([]*Role, Metadata, error) {
 	roles := make([]*Role, 0)
-	err := m.DB.Find(&roles).Error
+	err := m.DB.Scopes(p.PaginatedResults).Find(&roles).Error
 	if err != nil {
-		return []*Role{}, err
+		return nil, Metadata{}, err
 	}
-	return roles, nil
+	var total int64
+	m.DB.Model(&Role{}).Count(&total)
+	metadata := CalculateMetadata(p, int(total))
+	return roles, metadata, nil
 }
 
 func (m RoleModel) GetByID(id int64) (*Role, error) {

@@ -71,6 +71,10 @@ func (m UserModel) Update(u *User) error {
 	return m.DB.Model(u).Updates(u).Error
 }
 
+func (m UserModel) Delete(u *User) error {
+	return m.DB.Model(u).Delete(u).Error
+}
+
 func (m UserModel) GetByID(id int64) (*User, error) {
 	var user User
 	if err := m.DB.First(&user, id).Error; err != nil {
@@ -110,12 +114,20 @@ func (m UserModel) GetForToken(scope string, tokenPlaintext string) (*User, erro
 		default:
 			return nil, err
 		}
-		//return nil, err
 	}
 
-	//if token.User.ID == 0 {
-	//return nil, ErrRecordNotFound
-	//}
-
 	return &token.User, nil
+}
+
+func (m UserModel) GetAll(p *Paginate) ([]*User, Metadata, error) {
+	users := make([]*User, 0)
+	err := m.DB.Scopes(p.PaginatedResults).Find(&users).Error
+	if err != nil {
+		return nil, Metadata{}, nil
+	}
+
+	var total int64
+	m.DB.Model(&User{}).Count(&total)
+	metadata := CalculateMetadata(p, int(total))
+	return users, metadata, nil
 }
