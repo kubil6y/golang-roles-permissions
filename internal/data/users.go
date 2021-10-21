@@ -59,7 +59,7 @@ func (m UserModel) Insert(u *User) error {
 	if err := m.DB.Create(u).Error; err != nil {
 		switch {
 		case IsDuplicateRecord(err):
-			return ErrDuplicateEmail
+			return ErrDuplicateRecord
 		default:
 			return err
 		}

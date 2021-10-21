@@ -5,6 +5,8 @@ import (
 	"github.com/kubil6y/myshop-go/internal/validator"
 )
 
+// REQUEST BODY VALIDATIONS //////////////////////////////
+
 type registerUserDTO struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -72,3 +74,5 @@ func (d *grantPermissionsToRolesDTO) validate(v *validator.Validator) {
 	v.Check(len(d.Permissions) > 0, "permissions", "invalid value, []int > 0")
 	v.Check(validator.IsUniqueIS(d.Permissions), "permissions", "must be unique values")
 }
+
+// QUERY PARAMETER VALIDATIONS //////////////////////////////

@@ -16,13 +16,24 @@ type PermissionModel struct {
 	DB *gorm.DB
 }
 
-func (m PermissionModel) GetAll() ([]*Permission, error) {
+func (p *PermissionModel) Count() int {
+	var total int64
+	p.DB.Model(&Permission{}).Count(&total)
+	return int(total)
+}
+
+func (m PermissionModel) GetAll(p *Paginate) ([]*Permission, Metadata, error) {
 	permissions := make([]*Permission, 0)
-	err := m.DB.Find(&permissions).Error
+	err := m.DB.Scopes(NewPaginate(p.Limit, p.Page).PaginatedResults).Find(&permissions).Error
 	if err != nil {
-		return []*Permission{}, err
+		return []*Permission{}, Metadata{}, err
 	}
-	return permissions, nil
+
+	var total int64
+	m.DB.Model(&Permission{}).Count(&total)
+	metadata := CalculateMetadata(p, int(total))
+
+	return permissions, metadata, nil
 }
 
 func (m PermissionModel) GetByID(id int64) (*Permission, error) {

@@ -6,10 +6,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/kubil6y/myshop-go/internal/validator"
 )
 
 // envelope type allows us to send quick json responses
@@ -140,3 +142,35 @@ func (app *application) intSliceToSet(nums []int64) []int64 {
 	}
 	return result
 }
+
+// QUERY STRING METHODS BEGIN //////////////////////////////
+func (app *application) readString(qs url.Values, key string, defaultValue string) string {
+	s := qs.Get(key)
+	if s == "" {
+		return defaultValue
+	}
+	return s
+}
+
+func (app *application) readInt(qs url.Values, v *validator.Validator, key string, defaultValue int) int {
+	s := qs.Get(key)
+	if s == "" {
+		return defaultValue
+	}
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		v.AddError(key, "invalid value")
+		return defaultValue
+	}
+	return i
+}
+
+func (app *application) readCSV(qs url.Values, key string, defaultValue []string) []string {
+	csv := qs.Get(key)
+	if csv == "" {
+		return defaultValue
+	}
+	return strings.Split(csv, ",")
+}
+
+// QUERY STRING METHODS END //////////////////////////////

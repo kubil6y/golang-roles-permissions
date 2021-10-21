@@ -44,13 +44,28 @@ func (app *application) createPermissionHandler(w http.ResponseWriter, r *http.R
 }
 
 func (app *application) getAllPermissionsHandler(w http.ResponseWriter, r *http.Request) {
-	permissions, err := app.models.Permissions.GetAll()
+	qs := r.URL.Query()
+	v := validator.New()
+	p := &data.Paginate{
+		Limit: app.readInt(qs, v, "limit", 5),
+		Page:  app.readInt(qs, v, "page", 1),
+	}
+
+	if data.ValidatePaginate(v, p); !v.IsValid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	permissions, metadata, err := app.models.Permissions.GetAll(p)
 	if err != nil {
 		app.serverErrorResponse(w, r, err)
 		return
 	}
 
-	e := envelope{"permissions": permissions}
+	e := envelope{
+		"permissions": permissions,
+		"metadata":    metadata,
+	}
 	out := app.outOK(e)
 	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
 		app.serverErrorResponse(w, r, err)
