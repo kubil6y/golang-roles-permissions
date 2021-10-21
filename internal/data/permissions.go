@@ -8,7 +8,8 @@ import (
 
 type Permission struct {
 	CoreModel
-	Name string `json:"name" gorm:"uniqueIndex;not null"`
+	Name  string `json:"name" gorm:"uniqueIndex;not null"`
+	Roles []Role `json:"permissions,omitempty" gorm:"many2many:roles_permissions;constraint:OnDelete:CASCADE"`
 }
 
 type PermissionModel struct {

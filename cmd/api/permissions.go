@@ -128,3 +128,34 @@ func (app *application) updatePermissionsHandler(w http.ResponseWriter, r *http.
 		return
 	}
 }
+
+func (app *application) deletePermissionsHandler(w http.ResponseWriter, r *http.Request) {
+	id, err := app.readIDParam(r)
+	if err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	permission, err := app.models.Permissions.GetByID(id)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	if err := app.models.Permissions.Delete(permission); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	e := envelope{"message": "success"}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusAccepted, out, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+}

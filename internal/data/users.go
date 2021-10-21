@@ -21,7 +21,7 @@ type User struct {
 	Password    []byte       `json:"-" gorm:"not null"`
 	IsActivated bool         `json:"-" gorm:"default:false;not null"`
 	IsAdmin     bool         `json:"-" gorm:"default:false;not null"`
-	Tokens      []Token      `json:"tokens,omitempty" gorm:"foreignKey:UserID"`
+	Tokens      []Token      `json:"tokens,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
 	Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:users_permissions"`
 }
 

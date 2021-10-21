@@ -9,7 +9,7 @@ import (
 type Role struct {
 	CoreModel
 	Name        string       `json:"name" gorm:"uniqueIndex;not null"`
-	Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:roles_permissions"`
+	Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:roles_permissions;constraint:OnDelete:CASCADE"`
 }
 
 type RoleModel struct {
@@ -71,5 +71,7 @@ func (m RoleModel) Delete(r *Role) error {
 }
 
 func (m RoleModel) Update(r *Role) error {
-	return m.DB.Model(r).Updates(r).Error
+	err := m.DB.Model(r).Association("Permissions").Replace(r.Permissions)
+	err = m.DB.Save(r).Error
+	return err
 }

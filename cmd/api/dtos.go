@@ -52,15 +52,14 @@ func (d *permissionDTO) populate(p *data.Permission) {
 }
 
 type roleDTO struct {
-	Name string `json:"name"`
+	Name        string  `json:"name"`
+	Permissions []int64 `json:"permissions"`
 }
 
 func (d *roleDTO) validate(v *validator.Validator) {
 	v.Check(d.Name != "", "name", "must be provided")
-}
-
-func (d *roleDTO) populate(r *data.Role) {
-	r.Name = d.Name
+	v.Check(len(d.Permissions) != 0, "permissions", "must be provided")
+	v.Check(validator.IsUniqueIS(d.Permissions), "permissions", "values must be unique")
 }
 
 type grantPermissionsToRolesDTO struct {
