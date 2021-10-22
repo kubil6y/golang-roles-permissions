@@ -15,15 +15,17 @@ var (
 
 type User struct {
 	CoreModel
-	FirstName   string       `json:"first_name" gorm:"not null"`
-	LastName    string       `json:"last_name" gorm:"not null"`
-	Email       string       `json:"email" gorm:"uniqueIndex;not null"`
-	Password    []byte       `json:"-" gorm:"not null"`
-	IsActivated bool         `json:"-" gorm:"default:false;not null"`
-	IsAdmin     bool         `json:"-" gorm:"default:false;not null"`
-	Tokens      []Token      `json:"tokens,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
-	Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:users_permissions"`
+	FirstName   string  `json:"first_name" gorm:"not null"`
+	LastName    string  `json:"last_name" gorm:"not null"`
+	Email       string  `json:"email" gorm:"uniqueIndex;not null"`
+	Password    []byte  `json:"-" gorm:"not null"`
+	IsActivated bool    `json:"-" gorm:"default:false;not null"`
+	IsAdmin     bool    `json:"-" gorm:"default:false;not null"`
+	Tokens      []Token `json:"tokens,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
+	Roles       []Role  `json:"roles" gorm:"many2many:users_roles"`
 }
+
+//Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:users_permissions"`
 
 func (u *User) IsAnonymous() bool {
 	return u == AnonymousUser

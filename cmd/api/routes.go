@@ -18,7 +18,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPost, "/v1/tokens/authentication", app.createAuthenticationTokenHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/users", app.getAllUsersHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/users/:id", app.getUserHandler)
-	router.HandlerFunc(http.MethodPatch, "/v1/admin/users/me", app.updateUserOwnHandler)
+	router.HandlerFunc(http.MethodPatch, "/v1/users/me", app.updateUserOwnHandler)
 
 	router.HandlerFunc(http.MethodPost, "/v1/admin/permissions", app.isAdmin(app.createPermissionHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/permissions", app.isAdmin(app.getAllPermissionHandler))
