@@ -173,4 +173,23 @@ func (app *application) readCSV(qs url.Values, key string, defaultValue []string
 	return strings.Split(csv, ",")
 }
 
-// QUERY STRING METHODS END //////////////////////////////
+func ContainsIS(nums []int64, target int64) bool {
+	for _, v := range nums {
+		if v == target {
+			return true
+		}
+	}
+	return false
+}
+
+// CleanedIS() compares input slice to target slice,
+// returns only elements that do not exist on target slice
+func CleanedIS(target, input []int64) []int64 {
+	var result []int64
+	for _, v := range input {
+		if !ContainsIS(target, v) {
+			result = append(result, v)
+		}
+	}
+	return result
+}

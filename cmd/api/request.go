@@ -121,3 +121,15 @@ func (d *updateUserDTO) populate(u *data.User) error {
 	}
 	return err
 }
+
+type roleToUserDTO struct {
+	UserID  int64   `json:"user_id"`
+	RoleIDs []int64 `json:"role_ids"`
+}
+
+func (d *roleToUserDTO) validate(v *validator.Validator) {
+	v.Check(d.UserID != 0, "user_id", "must be provided")
+	v.Check(d.UserID > 0, "user_id", "invalid value")
+	v.Check(len(d.RoleIDs) != 0, "role_ids", "must be provided")
+	v.Check(validator.IsUniqueIS(d.RoleIDs), "role_ids", "must be unique values")
+}

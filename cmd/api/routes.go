@@ -19,6 +19,7 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/users", app.getAllUsersHandler)
 	router.HandlerFunc(http.MethodGet, "/v1/users/:id", app.getUserHandler)
 	router.HandlerFunc(http.MethodPatch, "/v1/users/me", app.updateUserOwnHandler)
+	router.HandlerFunc(http.MethodGet, "/v1/profile", app.getProfileHandler)
 
 	router.HandlerFunc(http.MethodPost, "/v1/admin/permissions", app.isAdmin(app.createPermissionHandler))
 	router.HandlerFunc(http.MethodGet, "/v1/admin/permissions", app.isAdmin(app.getAllPermissionHandler))
@@ -31,6 +32,9 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodGet, "/v1/admin/roles/:id", app.isAdmin(app.getRoleHandler))
 	router.HandlerFunc(http.MethodPut, "/v1/admin/roles/:id", app.isAdmin(app.updateRolesHandler))
 	router.HandlerFunc(http.MethodDelete, "/v1/admin/roles/:id", app.isAdmin(app.deleteRolesHandler))
+
+	router.HandlerFunc(http.MethodPost, "/v1/admin/users/grant-role", app.grantRoleToUserHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/admin/users/revoke-role", app.revokeRoleToUserHandler)
 
 	router.HandlerFunc(http.MethodPatch, "/v1/admin/users/:id", app.updateUserHandler)
 	router.HandlerFunc(http.MethodDelete, "/v1/admin/users/:id", app.deleteUserHandler)

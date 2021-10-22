@@ -10,6 +10,7 @@ type Role struct {
 	CoreModel
 	Name        string       `json:"name" gorm:"uniqueIndex;not null"`
 	Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:roles_permissions;constraint:OnDelete:CASCADE"`
+	Users       []User       `json:"roles,omitempty" gorm:"many2many:users_roles;constraint:OnDelete:CASCADE"`
 }
 
 type RoleModel struct {

@@ -15,14 +15,16 @@ var (
 
 type User struct {
 	CoreModel
-	FirstName   string  `json:"first_name" gorm:"not null"`
-	LastName    string  `json:"last_name" gorm:"not null"`
-	Email       string  `json:"email" gorm:"uniqueIndex;not null"`
-	Password    []byte  `json:"-" gorm:"not null"`
-	IsActivated bool    `json:"-" gorm:"default:false;not null"`
-	IsAdmin     bool    `json:"-" gorm:"default:false;not null"`
-	Tokens      []Token `json:"tokens,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
-	Roles       []Role  `json:"roles" gorm:"many2many:users_roles"`
+	FirstName          string       `json:"first_name" gorm:"not null"`
+	LastName           string       `json:"last_name" gorm:"not null"`
+	Email              string       `json:"email" gorm:"uniqueIndex;not null"`
+	Password           []byte       `json:"-" gorm:"not null"`
+	IsActivated        bool         `json:"-" gorm:"default:false;not null"`
+	IsAdmin            bool         `json:"-" gorm:"default:false;not null"`
+	Tokens             []Token      `json:"tokens,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
+	Roles              []Role       `json:"roles,omitempty" gorm:"many2many:users_roles;constraint:OnDelete:CASCADE"`
+	GrantedPermissions []Permission `json:"granted_permissions,omitempty" gorm:"many2many:granted_users_permissions"`
+	RevodedPermissions []Permission `json:"revoked_permissions,omitempty" gorm:"many2many:revoked_users_permissions"`
 }
 
 //Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:users_permissions"`
@@ -90,6 +92,23 @@ func (m UserModel) GetByID(id int64) (*User, error) {
 	return &user, nil
 }
 
+func (m UserModel) GetByIDWithRolesAndPermissions(id int64) (*User, error) {
+	var user User
+	if err := m.DB.
+		Preload("Roles").
+		Preload("GrantedPermissions").
+		Preload("RevodedPermissions").
+		First(&user, id).Error; err != nil {
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			return nil, ErrRecordNotFound
+		default:
+			return nil, err
+		}
+	}
+	return &user, nil
+}
+
 func (m UserModel) GetByEmail(email string) (*User, error) {
 	var user User
 	if err := m.DB.Where("email = ?", email).First(&user).Error; err != nil {
@@ -108,7 +127,7 @@ func (m UserModel) GetForToken(scope string, tokenPlaintext string) (*User, erro
 	tokenHash := sizedTokenHash[:]
 
 	var token Token
-	err := m.DB.Where("hash=? and scope=? and expiry > ?", tokenHash, scope, time.Now()).Preload("User").First(&token).Error
+	err := m.DB.Where("hash=? and scope=? and expiry > ?", tokenHash, scope, time.Now()).First(&token).Error
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
@@ -118,7 +137,14 @@ func (m UserModel) GetForToken(scope string, tokenPlaintext string) (*User, erro
 		}
 	}
 
-	return &token.User, nil
+	var user User
+	err = m.DB.Where("id=?", token.UserID).
+		Preload("Roles").
+		Preload("GrantedPermissions").
+		Preload("RevodedPermissions").
+		First(&user).Error
+
+	return &user, nil
 }
 
 func (m UserModel) GetAll(p *Paginate) ([]*User, Metadata, error) {

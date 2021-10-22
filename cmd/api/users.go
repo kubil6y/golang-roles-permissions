@@ -215,3 +215,149 @@ func (app *application) updateUserOwnHandler(w http.ResponseWriter, r *http.Requ
 		return
 	}
 }
+
+func (app *application) getProfileHandler(w http.ResponseWriter, r *http.Request) {
+	me := app.contextGetUser(r)
+	e := envelope{"user": me}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusOK, out, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) grantRoleToUserHandler(w http.ResponseWriter, r *http.Request) {
+	var input roleToUserDTO
+	if err := app.readJSON(w, r, &input); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+	if input.validate(v); !v.IsValid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	targetUser, err := app.models.Users.GetByIDWithRolesAndPermissions(input.UserID)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	var inputRoles []data.Role // roles in dto
+	for _, roleID := range input.RoleIDs {
+		role, err := app.models.Roles.GetByID(roleID)
+		if err != nil {
+			switch {
+			case errors.Is(err, data.ErrRecordNotFound):
+				app.notFoundResponse(w, r)
+			default:
+				app.serverErrorResponse(w, r, err)
+			}
+			return
+		}
+
+		inputRoles = append(inputRoles, *role)
+	}
+
+	targetUser.Roles = append(targetUser.Roles, inputRoles...)
+
+	if err := app.models.Users.Update(targetUser); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	e := envelope{"message": "success"}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusAccepted, out, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+}
+
+func (app *application) revokeRoleToUserHandler(w http.ResponseWriter, r *http.Request) {
+	var input roleToUserDTO
+	if err := app.readJSON(w, r, &input); err != nil {
+		app.badRequestResponse(w, r, err)
+		return
+	}
+
+	v := validator.New()
+	if input.validate(v); !v.IsValid() {
+		app.failedValidationResponse(w, r, v.Errors)
+		return
+	}
+
+	targetUser, err := app.models.Users.GetByIDWithRolesAndPermissions(input.UserID)
+	if err != nil {
+		switch {
+		case errors.Is(err, data.ErrRecordNotFound):
+			app.notFoundResponse(w, r)
+		default:
+			app.serverErrorResponse(w, r, err)
+		}
+		return
+	}
+
+	var inputRoles []data.Role // roles in dto
+	for _, roleID := range input.RoleIDs {
+		role, err := app.models.Roles.GetByID(roleID)
+		if err != nil {
+			switch {
+			case errors.Is(err, data.ErrRecordNotFound):
+				app.notFoundResponse(w, r)
+			default:
+				app.serverErrorResponse(w, r, err)
+			}
+			return
+		}
+
+		inputRoles = append(inputRoles, *role)
+	}
+
+	// here remove it...
+	doesRoleExist := func(list []data.Role, role data.Role) bool {
+		for _, v := range list {
+			if v.ID == role.ID {
+				return true
+			}
+		}
+		return false
+	}
+
+	var newRoles []data.Role
+
+	for _, existingRole := range targetUser.Roles {
+		if !doesRoleExist(inputRoles, existingRole) {
+			newRoles = append(newRoles, existingRole)
+		}
+	}
+
+	targetUser.Roles = newRoles
+
+	err = app.models.Users.DB.Model(targetUser).Association("Roles").Replace(targetUser.Roles)
+	if err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+
+	/*
+		if err := app.models.Users.Update(targetUser); err != nil {
+			app.serverErrorResponse(w, r, err)
+			return
+		}
+	*/
+
+	e := envelope{"message": "success"}
+	out := app.outOK(e)
+	if err := app.writeJSON(w, http.StatusAccepted, out, nil); err != nil {
+		app.serverErrorResponse(w, r, err)
+		return
+	}
+}

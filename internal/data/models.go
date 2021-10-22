@@ -2,7 +2,6 @@ package data
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/jackc/pgconn"
@@ -37,7 +36,6 @@ func NewModels(db *gorm.DB) Models {
 }
 
 func IsDuplicateRecord(err error) bool {
-	fmt.Println("this is hit")
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
