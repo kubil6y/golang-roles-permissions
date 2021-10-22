@@ -133,3 +133,15 @@ func (d *roleToUserDTO) validate(v *validator.Validator) {
 	v.Check(len(d.RoleIDs) != 0, "role_ids", "must be provided")
 	v.Check(validator.IsUniqueIS(d.RoleIDs), "role_ids", "must be unique values")
 }
+
+type permissionToUserDTO struct {
+	UserID        int64   `json:"user_id"`
+	PermissionIDs []int64 `json:"permission_ids"`
+}
+
+func (d *permissionToUserDTO) validate(v *validator.Validator) {
+	v.Check(d.UserID != 0, "user_id", "must be provided")
+	v.Check(d.UserID > 0, "user_id", "invalid value")
+	v.Check(len(d.PermissionIDs) != 0, "permission_ids", "must be provided")
+	v.Check(validator.IsUniqueIS(d.PermissionIDs), "permission_ids", "must be unique values")
+}

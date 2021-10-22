@@ -24,7 +24,7 @@ type User struct {
 	Tokens             []Token      `json:"tokens,omitempty" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
 	Roles              []Role       `json:"roles,omitempty" gorm:"many2many:users_roles;constraint:OnDelete:CASCADE"`
 	GrantedPermissions []Permission `json:"granted_permissions,omitempty" gorm:"many2many:granted_users_permissions"`
-	RevodedPermissions []Permission `json:"revoked_permissions,omitempty" gorm:"many2many:revoked_users_permissions"`
+	RevokedPermissions []Permission `json:"revoked_permissions,omitempty" gorm:"many2many:revoked_users_permissions"`
 }
 
 //Permissions []Permission `json:"permissions,omitempty" gorm:"many2many:users_permissions"`
@@ -75,6 +75,29 @@ func (m UserModel) Update(u *User) error {
 	return m.DB.Model(u).Updates(u).Error
 }
 
+func (m UserModel) UpdateGrantedPermissions(u *User) error {
+	err := m.DB.Model(u).Association("GrantedPermissions").Replace(u.GrantedPermissions)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+func (m UserModel) UpdateRevokedPermissions(u *User) error {
+	err := m.DB.Model(u).Association("RevokedPermissions").Replace(u.RevokedPermissions)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m UserModel) UpdateRoles(u *User) error {
+	err := m.DB.Model(u).Association("Roles").Replace(u.Roles)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (m UserModel) Delete(u *User) error {
 	return m.DB.Model(u).Delete(u).Error
 }
@@ -97,7 +120,7 @@ func (m UserModel) GetByIDWithRolesAndPermissions(id int64) (*User, error) {
 	if err := m.DB.
 		Preload("Roles").
 		Preload("GrantedPermissions").
-		Preload("RevodedPermissions").
+		Preload("RevokedPermissions").
 		First(&user, id).Error; err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
@@ -141,7 +164,7 @@ func (m UserModel) GetForToken(scope string, tokenPlaintext string) (*User, erro
 	err = m.DB.Where("id=?", token.UserID).
 		Preload("Roles").
 		Preload("GrantedPermissions").
-		Preload("RevodedPermissions").
+		Preload("RevokedPermissions").
 		First(&user).Error
 
 	return &user, nil

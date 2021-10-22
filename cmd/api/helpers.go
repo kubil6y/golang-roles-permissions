@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/kubil6y/myshop-go/internal/data"
 	"github.com/kubil6y/myshop-go/internal/validator"
 )
 
@@ -192,4 +193,13 @@ func CleanedIS(target, input []int64) []int64 {
 		}
 	}
 	return result
+}
+
+func ContainsPermission(list []data.Permission, target data.Permission) bool {
+	for _, v := range list {
+		if v.ID == target.ID {
+			return true
+		}
+	}
+	return false
 }

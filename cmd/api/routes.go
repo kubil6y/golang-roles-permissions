@@ -33,8 +33,11 @@ func (app *application) routes() http.Handler {
 	router.HandlerFunc(http.MethodPut, "/v1/admin/roles/:id", app.isAdmin(app.updateRolesHandler))
 	router.HandlerFunc(http.MethodDelete, "/v1/admin/roles/:id", app.isAdmin(app.deleteRolesHandler))
 
+	router.HandlerFunc(http.MethodGet, "/v1/admin/users/access/:id", app.getUserRolesAndPermissions)
 	router.HandlerFunc(http.MethodPost, "/v1/admin/users/grant-role", app.grantRoleToUserHandler)
 	router.HandlerFunc(http.MethodPost, "/v1/admin/users/revoke-role", app.revokeRoleToUserHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/admin/users/grant-permission", app.grantPermissionToUserHandler)
+	router.HandlerFunc(http.MethodPost, "/v1/admin/users/revoke-permission", app.revokePermissionToUserHandler)
 
 	router.HandlerFunc(http.MethodPatch, "/v1/admin/users/:id", app.updateUserHandler)
 	router.HandlerFunc(http.MethodDelete, "/v1/admin/users/:id", app.deleteUserHandler)
