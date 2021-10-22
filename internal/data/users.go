@@ -162,7 +162,7 @@ func (m UserModel) GetForToken(scope string, tokenPlaintext string) (*User, erro
 
 	var user User
 	err = m.DB.Where("id=?", token.UserID).
-		Preload("Roles").
+		Preload("Roles.Permissions").
 		Preload("GrantedPermissions").
 		Preload("RevokedPermissions").
 		First(&user).Error

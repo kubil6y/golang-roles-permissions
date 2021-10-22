@@ -2,6 +2,7 @@ package data
 
 import (
 	"errors"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -10,6 +11,16 @@ type Permission struct {
 	CoreModel
 	Name  string `json:"name" gorm:"uniqueIndex;not null"`
 	Roles []Role `json:"permissions,omitempty" gorm:"many2many:roles_permissions;constraint:OnDelete:CASCADE"`
+}
+
+func PermissionsInclude(list []Permission, code string) bool {
+	code = strings.ToLower(code)
+	for _, v := range list {
+		if strings.ToLower(v.Name) == code {
+			return true
+		}
+	}
+	return false
 }
 
 type PermissionModel struct {

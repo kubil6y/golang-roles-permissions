@@ -178,12 +178,28 @@ func (app *application) isAdmin(next http.HandlerFunc) http.HandlerFunc {
 
 func (app *application) requirePermission(code string, next http.HandlerFunc) http.HandlerFunc {
 	fn := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		//user := app.contextGetUser(r)
+		user := app.contextGetUser(r)
 
-		// get user permissions here
+		var grantedPermissions []data.Permission
+		var revokedPermissions []data.Permission
+		// custom permissions
+		for _, gp := range user.GrantedPermissions {
+			grantedPermissions = append(grantedPermissions, gp)
+		}
+		for _, rp := range user.RevokedPermissions {
+			revokedPermissions = append(revokedPermissions, rp)
+		}
+		// permissions that come from roles
+		for _, role := range user.Roles {
+			grantedPermissions = append(grantedPermissions, role.Permissions...)
+		}
 
 		// check if user has the permission...
-		if false {
+		if data.PermissionsInclude(revokedPermissions, code) {
+			app.notPermittedResponse(w, r)
+			return
+		}
+		if !data.PermissionsInclude(grantedPermissions, code) {
 			app.notPermittedResponse(w, r)
 			return
 		}
